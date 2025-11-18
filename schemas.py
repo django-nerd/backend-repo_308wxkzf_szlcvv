@@ -11,7 +11,7 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 
 # Example schemas (replace with your own):
@@ -22,7 +22,7 @@ class User(BaseModel):
     Collection name: "user" (lowercase of class name)
     """
     name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
+    email: EmailStr = Field(..., description="Email address")
     address: str = Field(..., description="Address")
     age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
     is_active: bool = Field(True, description="Whether user is active")
@@ -37,6 +37,34 @@ class Product(BaseModel):
     price: float = Field(..., ge=0, description="Price in dollars")
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
+
+# Café-specific schemas
+
+class Reservation(BaseModel):
+    """
+    Reservations/Contact requests from the website
+    Collection name: "reservation"
+    """
+    name: str = Field(..., min_length=2, max_length=120)
+    email: Optional[EmailStr] = Field(None)
+    phone: Optional[str] = Field(None, description="Phone number")
+    date: Optional[str] = Field(None, description="Desired date (optional)")
+    time: Optional[str] = Field(None, description="Desired time (optional)")
+    guests: Optional[int] = Field(None, ge=1, le=20)
+    message: Optional[str] = Field(None, max_length=1000)
+    source: str = Field("website", description="Submission source identifier")
+
+class ContactMessage(BaseModel):
+    """
+    General contact messages
+    Collection name: "contactmessage"
+    """
+    name: str
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    subject: Optional[str] = None
+    message: str
+    source: str = "website"
 
 # Add your own schemas here:
 # --------------------------------------------------
